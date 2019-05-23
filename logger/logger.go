@@ -30,7 +30,7 @@ func CallerMarshalFunc(file string, line int) string {
 }
 
 //调用初始化
-func SetUp(path, defaultFile, model) {
+func SetUp(path, defaultFile, model string) {
 	logPath = path
 	logFileName = defaultFile
 	logModel = model

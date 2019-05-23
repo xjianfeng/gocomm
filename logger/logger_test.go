@@ -7,3 +7,7 @@ import (
 func TestLog(t *testing.T) {
 	log.LogInfo("Data:%s", "OKKKKKKK")
 }
+
+func init() {
+	SetUp(logPath, logFileName, logModel)
+}

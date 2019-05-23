@@ -59,6 +59,7 @@ func newpool() (*redis.Pool, error) {
 }
 
 func SetUp(c *RedisConf) {
+	cfg = c
 	var err error
 	redisPool, err = newpool()
 	if err != nil {

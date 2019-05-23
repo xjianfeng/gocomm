@@ -40,7 +40,7 @@ func (m *MongoDb) Close() {
 	m.session.Close()
 }
 
-func SetUp(mongoUri) {
+func SetUp(mongoUri string) {
 	var err error
 	MONGO_SESSION, err = mgo.Dial(mongoUri)
 	MONGO_SESSION.SetMode(mgo.Monotonic, true)
