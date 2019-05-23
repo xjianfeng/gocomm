@@ -26,20 +26,19 @@ func callFunc(key interface{}, fun func()) {
 			buf := make([]byte, 2048)
 			l := runtime.Stack(buf, false)
 			log.LogError("%v:%s", r, buf[:l])
-			erroring.SendErrorResponse()
 		}
 	}()
 
-	v := timeManager.Load(key)
-	if v != nil {
+	_, ok := timeManager.Load(key)
+	if ok {
 		timeManager.Delete(key)
 	}
 	fun()
 }
 
 func Stop(key interface{}) {
-	t := timeManager.Load(key)
-	if t == nil {
+	t, ok := timeManager.Load(key)
+	if !ok {
 		return
 	}
 	v := t.(*time.Timer)
