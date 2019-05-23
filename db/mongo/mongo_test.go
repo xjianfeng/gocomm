@@ -12,6 +12,8 @@ import (
 // https://godoc.org/labix.org/v2/mgo
 
 func TestMongo(t *testing.T) {
+	SetUp("localhost:27017/?maxPoolSize=8")
+
 	mongo := GetMongo("userinfo", "user")
 	c := mongo.Collection
 	defer mongo.Close()
@@ -37,8 +39,4 @@ func TestMongo(t *testing.T) {
 	c = mongo.UseCollect("test")
 	c.Find(nil).One(&otherResult)
 	t.Logf("table test Change Collection %+v", otherResult)
-}
-
-func init() {
-	SetUp("localhost:27017/?maxPoolSize=8")
 }
