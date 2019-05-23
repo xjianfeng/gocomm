@@ -25,7 +25,7 @@ func callFunc(key interface{}, fun func()) {
 		if r := recover(); r != nil {
 			buf := make([]byte, 2048)
 			l := runtime.Stack(buf, false)
-			log.Error("%v:%s", r, buf[:l])
+			log.LogError("%v:%s", r, buf[:l])
 			erroring.SendErrorResponse()
 		}
 	}()

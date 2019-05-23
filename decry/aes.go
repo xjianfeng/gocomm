@@ -14,7 +14,7 @@ func DoAesEncrypt(entryStr []byte) string {
 	// AES-128。key长度：16, 24, 32 bytes 对应 AES-128, AES-192, AES-256
 	result, err := AesEncrypt(entryStr, key)
 	if err != nil {
-		log.Error("DoAesEncrypt Error %s", err.Error())
+		log.LogError("DoAesEncrypt Error %s", err.Error())
 		return ""
 	}
 	res := base64.StdEncoding.EncodeToString(result)
@@ -24,12 +24,12 @@ func DoAesEncrypt(entryStr []byte) string {
 func DoAesDecrypt(result string) string {
 	encryData, err := base64.StdEncoding.DecodeString(result)
 	if err != nil {
-		log.Error("DoAesDecrypt Base64 DecodeString Error %s", err.Error())
+		log.LogError("DoAesDecrypt Base64 DecodeString Error %s", err.Error())
 		return ""
 	}
 	origData, err := AesDecrypt(encryData, key)
 	if err != nil {
-		log.Error("DoAesDecrypt Error %s", err.Error())
+		log.LogError("DoAesDecrypt Error %s", err.Error())
 		return ""
 	}
 	return string(origData)

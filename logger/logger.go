@@ -102,3 +102,7 @@ func LogError(format string, a ...interface{}) {
 func LogFatal(format string, a ...interface{}) {
 	log.Fatal().Msgf(format, a...)
 }
+
+func init() {
+	SetUp(logPath, logFileName, logModel)
+}

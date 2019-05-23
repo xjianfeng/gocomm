@@ -71,7 +71,7 @@ func (u *UrlParam) SortUrlEncode() string {
 func HttpGet(url string) ([]byte, error) {
 	resp, err := http.Get(url)
 	if err != nil {
-		log.Error("HttpGet url %s error %s", url, err.Error())
+		log.LogError("HttpGet url %s error %s", url, err.Error())
 		return []byte{}, err
 	}
 	resp.Close = true
@@ -89,7 +89,7 @@ func HttpPost(url string, postBody []byte, header map[string]string) ([]byte, er
 
 	req, err := http.NewRequest("POST", url, bytes.NewReader(postBody))
 	if err != nil {
-		log.Error("HttpPost Error %s", err.Error())
+		log.LogError("HttpPost Error %s", err.Error())
 		return []byte{}, err
 	}
 	req.Close = true
@@ -103,20 +103,20 @@ func HttpPost(url string, postBody []byte, header map[string]string) ([]byte, er
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Error("HttpPost Client Do Error %s", err.Error())
+		log.LogError("HttpPost Client Do Error %s", err.Error())
 		return []byte{}, err
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Error("HttpPost Error %s", err.Error())
+		log.LogError("HttpPost Error %s", err.Error())
 		return []byte{}, err
 	}
 	if len(body) > 1024 {
-		log.Release("HttpPost Success Url %s header:%v Data %s, ret %s", url, header, postBody, body[:1024])
+		log.LogInfo("HttpPost Success Url %s header:%v Data %s, ret %s", url, header, postBody, body[:1024])
 	} else {
-		log.Release("HttpPost Success Url %s header:%v Data %s, ret %s", url, header, postBody, body)
+		log.LogInfo("HttpPost Success Url %s header:%v Data %s, ret %s", url, header, postBody, body)
 	}
 	return body, nil
 }
@@ -124,7 +124,7 @@ func HttpPost(url string, postBody []byte, header map[string]string) ([]byte, er
 func LoadCaConfig() (*tls.Config, error) {
 	cert, err := tls.LoadX509KeyPair(tlsCacert, tlsCaKey)
 	if err != nil {
-		log.Error("LoadCaKey", err)
+		log.LogError("LoadCaKey", err)
 		return nil, err
 	}
 
@@ -147,7 +147,7 @@ func TlsPost(url string, postBody string, header map[string]string) ([]byte, err
 	req, err := http.NewRequest("POST", url, strings.NewReader(postBody))
 	req.Close = true
 	if err != nil {
-		log.Error("HttpPost Error %s", err.Error())
+		log.LogError("HttpPost Error %s", err.Error())
 		return []byte{}, err
 	}
 
@@ -163,15 +163,15 @@ func TlsPost(url string, postBody string, header map[string]string) ([]byte, err
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Error("HttpPost Error %s", err.Error())
+		log.LogError("HttpPost Error %s", err.Error())
 		return []byte{}, err
 	}
-	log.Release("HttpPost Success Data %s, ret %s", postBody, body)
+	log.LogInfo("HttpPost Success Data %s, ret %s", postBody, body)
 	return body, nil
 }
 
 //设置双向认证请求证书
-func SetTLSKey(caKey, caCert) {
+func SetTLSKey(caKey, caCert string) {
 	tlsCaKey = caKey
 	tlsCacert = caCert
 }

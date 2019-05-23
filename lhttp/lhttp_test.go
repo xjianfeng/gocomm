@@ -16,6 +16,6 @@ func TestUrlEncode(t *testing.T) {
 
 func TestHttpPost(t *testing.T) {
 	url := "http://www.sdfsdf.cm"
-	body := "a=1"
+	body := []byte("a=1")
 	HttpPost(url, body, nil)
 }

@@ -14,7 +14,7 @@ var (
 func InitRpcClient(serverAddr string) error {
 	client, err := rpc.Dial("tcp", serverAddr)
 	if err != nil {
-		log.Error("dialing:", err)
+		log.LogError("dialing:", err)
 		return err
 	}
 	rpcServerAddr = serverAddr
@@ -40,7 +40,7 @@ ReTry:
 		goto ReTry
 	}
 	if err != nil {
-		log.Error("RpcCall fname:%s, args:%v, reply:%v Error:%s", fname, args, reply, err.Error())
+		log.LogError("RpcCall fname:%s, args:%v, reply:%v LogError:%s", fname, args, reply, err.LogError())
 	}
 	return err
 }
