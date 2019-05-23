@@ -11,11 +11,12 @@ import (
 
 func main() {
 	logger.LogInfo("Md5Sum: %s", decry.Md5Sum([]byte("1234567890")))
-	ret, err := lhttp.HttpGet("http://www.baidu.com")
+
+	ret, err := lhttp.HttpGet("http://www.abc.com")
 	if err != nil {
 		logger.LogError(err.Error())
 	}
-	Logger.LogInfo("GetData %s,", ret)
+	logger.LogInfo("GetData %s,", ret)
 
 	data := sort.SortMap{
 		"abc":  1,
@@ -24,13 +25,14 @@ func main() {
 		"vvvv": 6,
 	}
 	v := data.SortMapStrKey(false)
-	Logger.LogInfo("sortMap %v,", v)
+	logger.LogInfo("sortMap %v,", v)
 
+	//注册三个定时器
 	timer.CallOut("unitKey1", time.Second, func() { println("1111111111111111111") })
-	timer.CallOut("unitKey2", 3*time.Second, func() { println("1111111111111111111") })
-	timer.CallOut("unitKey3", 5*time.Second, func() { println("1111111111111111111") })
-
-	time.Sleep(3 * time.Second)
+	timer.CallOut("unitKey2", 3*time.Second, func() { println("222222222222222222") })
+	timer.CallOut("unitKey3", 5*time.Second, func() { println("33333333333333333") })
+	//停掉一个
 	timer.Stop("unitKey3")
+
 	time.Sleep(10 * time.Second)
 }
