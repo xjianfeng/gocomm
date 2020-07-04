@@ -17,19 +17,19 @@ type Validator interface {
 	Validate(interface{}) (bool, error)
 }
 
-type DefaultValidator struct {
+type defaultValidator struct {
 }
 
-func (v DefaultValidator) Validate(val interface{}) (bool, error) {
+func (v defaultValidator) Validate(val interface{}) (bool, error) {
 	return true, nil
 }
 
-type StringValidator struct {
+type stringValidator struct {
 	Min int
 	Max int
 }
 
-func (v StringValidator) Validate(val interface{}) (bool, error) {
+func (v stringValidator) Validate(val interface{}) (bool, error) {
 	l := len(val.(string))
 
 	if l == 0 {
@@ -47,12 +47,12 @@ func (v StringValidator) Validate(val interface{}) (bool, error) {
 	return true, nil
 }
 
-type Float32Validator struct {
+type float32Validator struct {
 	Min float32
 	Max float32
 }
 
-func (v Float32Validator) Validate(val interface{}) (bool, error) {
+func (v float32Validator) Validate(val interface{}) (bool, error) {
 	num := val.(float32)
 
 	if num < v.Min {
@@ -66,12 +66,12 @@ func (v Float32Validator) Validate(val interface{}) (bool, error) {
 	return true, nil
 }
 
-type Float64Validator struct {
+type float64Validator struct {
 	Min float64
 	Max float64
 }
 
-func (v Float64Validator) Validate(val interface{}) (bool, error) {
+func (v float64Validator) Validate(val interface{}) (bool, error) {
 	num := val.(float64)
 
 	if num < v.Min {
@@ -85,12 +85,12 @@ func (v Float64Validator) Validate(val interface{}) (bool, error) {
 	return true, nil
 }
 
-type USignValidator struct {
+type uSignValidator struct {
 	Min uint
 	Max uint
 }
 
-func (v USignValidator) Validate(val interface{}) (bool, error) {
+func (v uSignValidator) Validate(val interface{}) (bool, error) {
 	num := val.(uint)
 
 	if num < v.Min {
@@ -104,12 +104,12 @@ func (v USignValidator) Validate(val interface{}) (bool, error) {
 	return true, nil
 }
 
-type NumberValidator struct {
+type numberValidator struct {
 	Min int
 	Max int
 }
 
-func (v NumberValidator) Validate(val interface{}) (bool, error) {
+func (v numberValidator) Validate(val interface{}) (bool, error) {
 	num := val.(int)
 
 	if num < v.Min {
@@ -138,34 +138,34 @@ func getValidatorFromTag(tag string) Validator {
 
 	switch args[0] {
 	case "number":
-		validator := NumberValidator{}
+		validator := numberValidator{}
 		//将structTag中的min和max解析到结构体中
 		fmt.Sscanf(strings.Join(args[1:], ","), "min=%d,max=%d", &validator.Min, &validator.Max)
 		return validator
 	case "float32":
-		validator := NumberValidator{}
+		validator := float32Validator{}
 		//将structTag中的min和max解析到结构体中
 		fmt.Sscanf(strings.Join(args[1:], ","), "min=%d,max=%d", &validator.Min, &validator.Max)
 		return validator
 	case "float64":
-		validator := NumberValidator{}
+		validator := float64Validator{}
 		//将structTag中的min和max解析到结构体中
 		fmt.Sscanf(strings.Join(args[1:], ","), "min=%d,max=%d", &validator.Min, &validator.Max)
 		return validator
 	case "usign":
-		validator := NumberValidator{}
+		validator := uSignValidator{}
 		//将structTag中的min和max解析到结构体中
 		fmt.Sscanf(strings.Join(args[1:], ","), "min=%d,max=%d", &validator.Min, &validator.Max)
 		return validator
 	case "string":
-		validator := StringValidator{}
+		validator := stringValidator{}
 		fmt.Sscanf(strings.Join(args[1:], ","), "min=%d,max=%d", &validator.Min, &validator.Max)
 		return validator
 	case "email":
 		return EmailValidator{}
 	}
 
-	return DefaultValidator{}
+	return defaultValidator{}
 }
 
 func ValidateStruct(s interface{}) error {
