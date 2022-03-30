@@ -2,6 +2,7 @@ package lru
 
 import (
 	"fmt"
+	"strconv"
 	"sync"
 	"testing"
 )
@@ -19,12 +20,12 @@ func TestLru(t *testing.T) {
 	}()
 	go func() {
 		for i := 1; i < 30000; i++ {
-			l.GetNode(fmt.Sprint("%d", i))
+			l.GetNode(strconv.Itoa(i))
 		}
 
 		for i := 1; i < 30000; i++ {
 			if i%3 == 0 {
-				l.GetNode(fmt.Sprint("%d", i))
+				l.GetNode(strconv.Itoa(i))
 			} else {
 				l.GetNode(l.Head)
 			}
@@ -46,8 +47,12 @@ func TestPrint(t *testing.T) {
 	l.GetNode("4")
 	println("GetNode 4")
 	l.printList()
-	l.GetNode("1")
-	println("GetNode 1")
+
+	l.DelNode("3")
+	println("DelNone 3")
+	l.printList()
+	l.GetNode("2")
+	println("GetNode 2")
 	l.printList()
 }
 
@@ -56,5 +61,14 @@ func TestOverFlow(t *testing.T) {
 	for i := 1; i < 10; i++ {
 		l.AddNode(fmt.Sprint(i), i)
 	}
+	l.printList()
+}
+
+func TestSetNode(t *testing.T) {
+	l, _ := InitLruCap(5)
+	l.AddNode("1", 333)
+	l.printList()
+	node := l.GetNode("1")
+	node.Data = 555
 	l.printList()
 }

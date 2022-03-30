@@ -49,8 +49,33 @@ func (l *LruQueue) AddNode(key string, data interface{}) {
 	atomic.AddInt32(&l.Size, 1)
 }
 
-func (l *LruQueue) GetNode(key string) interface{} {
+func (l *LruQueue) GetNode(key string) *NodeLruData {
 	return l.refreshNode(key)
+}
+
+func (l *LruQueue) DelNode(key string) {
+	l.Lock()
+	defer l.Unlock()
+	data, ok := l.List[key]
+	if !ok {
+		return
+	}
+	if key == l.Head {
+		l.Head = data.Tail
+	}
+	if key == l.Tail || data.Tail == "" {
+		l.Tail = data.Head
+	}
+	prevNode, ok := l.List[data.Head]
+	if ok {
+		prevNode.Tail = data.Tail
+	}
+	nextNode, ok := l.List[data.Tail]
+	if ok {
+		nextNode.Head = data.Head
+	}
+	delete(l.List, key)
+	atomic.AddInt32(&l.Size, -1)
 }
 
 func (l *LruQueue) delTailNode(key string) {
@@ -85,7 +110,7 @@ func (l *LruQueue) printList() {
 	fmt.Printf("\n")
 }
 
-func (l *LruQueue) refreshNode(key string) interface{} {
+func (l *LruQueue) refreshNode(key string) *NodeLruData {
 	l.Lock()
 	defer l.Unlock()
 
@@ -99,7 +124,7 @@ func (l *LruQueue) refreshNode(key string) interface{} {
 	}
 	//访问的元素在头部不用刷新
 	if key == l.Head {
-		return node.Data
+		return node
 	}
 	if node.Tail == "" || node.Tail == l.Tail {
 		prevNode, ok := l.List[node.Head]
@@ -122,7 +147,7 @@ func (l *LruQueue) refreshNode(key string) interface{} {
 
 	head.Head = key
 	l.Head = key
-	return node.Data
+	return node
 }
 
 func InitLruCap(capSize int32) (*LruQueue, error) {
