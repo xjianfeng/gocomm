@@ -3,6 +3,7 @@ package lhttp
 import (
 	"bytes"
 	"crypto/tls"
+	"fmt"
 	"github.com/xjianfeng/gocomm/logger"
 	"io/ioutil"
 	"net/http"
@@ -106,8 +107,10 @@ func HttpPost(url string, postBody []byte, header map[string]string) ([]byte, er
 		log.LogError("HttpPost Client Do Error %s", err.Error())
 		return []byte{}, err
 	}
+	if resp.StatusCode != 200 {
+		return []byte{}, fmt.Errorf("%d", resp.StatusCode)
+	}
 	defer resp.Body.Close()
-
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.LogError("HttpPost Error %s", err.Error())
