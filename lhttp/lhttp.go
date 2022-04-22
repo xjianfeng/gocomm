@@ -15,6 +15,7 @@ var (
 	tlsCaKey      = "cakey/apiclient_key.pem"
 	tlsCacert     = "cakey/apiclient_cert.pem"
 	defaultHeader = "application/x-www-form-urlencoded"
+	client        = &http.Client{}
 )
 
 var log = logger.New("http_client.log")
@@ -86,8 +87,6 @@ func HttpGet(url string) ([]byte, error) {
 }
 
 func HttpPost(url string, postBody []byte, header map[string]string) ([]byte, error) {
-	client := &http.Client{}
-
 	req, err := http.NewRequest("POST", url, bytes.NewReader(postBody))
 	if err != nil {
 		log.LogError("HttpPost Error %s", err.Error())
@@ -127,7 +126,7 @@ func HttpPost(url string, postBody []byte, header map[string]string) ([]byte, er
 func LoadCaConfig() (*tls.Config, error) {
 	cert, err := tls.LoadX509KeyPair(tlsCacert, tlsCaKey)
 	if err != nil {
-		log.LogError("LoadCaKey", err)
+		log.LogError("LoadCaKey Error %s", err.Error())
 		return nil, err
 	}
 

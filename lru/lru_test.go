@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"sync"
 	"testing"
+	"time"
 )
 
 func TestLru(t *testing.T) {
@@ -71,4 +72,20 @@ func TestSetNode(t *testing.T) {
 	node := l.GetNode("1")
 	node.Data = 555
 	l.printList()
+}
+
+func TestExpiredNode(t *testing.T) {
+	l, _ := InitLruCap(5)
+	l.AddExpiredNode("1", 111, 1)
+	l.AddExpiredNode("2", 222, 2)
+	l.AddExpiredNode("3", 333, 3)
+	l.AddExpiredNode("4", 444, 4)
+	l.printList()
+	time.Sleep(3 * time.Second)
+	go l.GetNode("1")
+	go l.GetNode("2")
+	go l.GetNode("3")
+	l.GetNode("4")
+	l.printList()
+	time.Sleep(1 * time.Second)
 }

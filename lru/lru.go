@@ -12,6 +12,7 @@ type NodeLruData struct {
 	Head      string
 	Tail      string
 	Timestamp int64
+	Expired   int64
 	Data      interface{}
 }
 
@@ -40,6 +41,34 @@ func (l *LruQueue) AddNode(key string, data interface{}) {
 	l.List[key] = &NodeLruData{
 		Tail:      l.Head,
 		Timestamp: time.Now().Unix(),
+		Data:      data,
+	}
+	l.Head = key
+	if l.Tail == "" {
+		l.Tail = key
+	}
+	atomic.AddInt32(&l.Size, 1)
+}
+
+// 超时节点
+func (l *LruQueue) AddExpiredNode(key string, data interface{}, sec int64) {
+	if atomic.LoadInt32(&l.Size) >= l.CapSize {
+		l.delTailNode(l.Tail)
+	}
+	l.Lock()
+	defer l.Unlock()
+	if _, ok := l.List[key]; ok {
+		return
+	}
+	oldHead, ok := l.List[l.Head]
+	if ok {
+		oldHead.Head = key
+	}
+	now := time.Now().Unix()
+	l.List[key] = &NodeLruData{
+		Tail:      l.Head,
+		Timestamp: now,
+		Expired:   now + sec,
 		Data:      data,
 	}
 	l.Head = key
@@ -112,10 +141,25 @@ func (l *LruQueue) printList() {
 
 func (l *LruQueue) refreshNode(key string) *NodeLruData {
 	l.Lock()
-	defer l.Unlock()
+	var expired = false
+	// 超时删除键值
+	// 在defer删除防止死锁
+	defer func() {
+		l.Unlock()
+		if !expired {
+			return
+		}
+		l.DelNode(key)
+	}()
 
 	node, ok := l.List[key]
 	if !ok {
+		return nil
+	}
+	now := time.Now().Unix()
+	// 超时删除
+	if node.Expired > 0 && node.Expired < now {
+		expired = true
 		return nil
 	}
 	head, ok := l.List[l.Head]
